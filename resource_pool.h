@@ -65,14 +65,6 @@ public:
     * \sa shutdown
     */
     std::shared_ptr<resource> acquire() {
-        {
-            std::lock_guard<std::mutex> guard(lock);
-            // no need to wait if we've been asked to stop
-            if (stop) {
-                return nullptr;
-            }
-        }
-
         std::unique_lock<std::mutex> guard(lock);
         condition.wait(guard, [this] {
             return haveResources > 0 || stop;
